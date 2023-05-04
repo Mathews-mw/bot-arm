@@ -1,46 +1,72 @@
 #include <Servo.h>
+
 #define ANGULO_INICIAL_MOTOR 90
 
-// Mapeamento dos joysticks
+// --- Mapeamento dos Joysticks ---
 #define joystick1X A0
 #define joystick1Y A1
 #define joystick2X A2
 #define joystick2Y A3
 
-// Mapeamento dos servos
+// --- Mapeamento dos Servos ---
 Servo motorBase;
-Servo motorBracoEsq;
-Servo motorBracoDir;
+Servo motorBraco1;
+Servo motorBraco2;
 Servo motorGarra;
 
 void setup() {
-  mapearPinosMotores();
-  mapearJoystickInputs();
-  inicializacaoAngulosMotores();
+  mapearPinosDosMotores();
+  inicializarAngulosDosMotores();
+  mapearJoysticksComoInput();
+
+  Serial.begin(9600);
 }
 
 void loop() {
-  
+  moverBase();
+  moverBraco1();
+  moverBraco2();
+  moverGarra();
 
-  delay(100);
+  int x, y;
+  int x2, y2;
 
+  x = analogRead(joystick1X);
+  y = analogRead(joystick1Y);
+  x2 = analogRead(joystick2X);
+  y2 = analogRead(joystick2Y);
+
+  //Serial.print("x1: ");
+  //Serial.print(x);
+  //Serial.print(" y1: ");
+  //Serial.println(y);
+
+  //Serial.println("");
+
+  //Serial.print("x2: ");
+  //Serial.print(x2);
+  //Serial.print(" y2: ");
+  //Serial.println(y2);
+
+  delay(200);
 }
 
-void mapearPinosMotores() {
+void mapearPinosDosMotores() {
   motorBase.attach(5);
-  motorBracoEsq.attach(6);
-  motorBracoDir.attach(9);
+  motorBraco1.attach(6);
+  motorBraco2.attach(9);
   motorGarra.attach(10);
 }
 
-void inicializacaoAngulosMotores() {
+void inicializarAngulosDosMotores() {
   motorBase.write(ANGULO_INICIAL_MOTOR);
-  motorBracoEsq.write(ANGULO_INICIAL_MOTOR);
-  motorBracoDir.write(ANGULO_INICIAL_MOTOR);
-  motorGarra.write(ANGULO_INICIAL_MOTOR);
+  motorBraco1.write(ANGULO_INICIAL_MOTOR);
+  motorBraco2.write(ANGULO_INICIAL_MOTOR);
+  motorGarra.write(180);
 }
 
-void mapearJoystickInputs() {
+
+void mapearJoysticksComoInput() {
   pinMode(joystick1X, INPUT);
   pinMode(joystick1Y, INPUT);
   pinMode(joystick2X, INPUT);
@@ -48,25 +74,41 @@ void mapearJoystickInputs() {
 }
 
 void moverBase() {
-  int posX1 = analogRead(joystick1X);
-  posX1 = map(posX1, 0, 1023, 0, 180);
-  motorBase.write(posX1);
+  int posX = analogRead(joystick1X);
+  posX = map(posX, 0, 1023, 0, 180);
+  motorBase.write(posX);
+
+  //Serial.println("");
+  //Serial.print("posição motor base: ");
+  //Serial.print(posX);
 }
 
-void moverBracoEsq() {
-  int posY1 = analogRead(joystick1Y);
-  posY1 = map(posY1, 0, 1023, 45, 135);
-  motorBracoEsq.write(posY1);
+void moverBraco1() {
+  int posY = analogRead(joystick1Y);
+  posY = map(posY, 0, 1023, 45, 135);
+  motorBraco1.write(posY);
+
+  //Serial.println("");
+  //Serial.print("posição motor braço 1: ");
+  //Serial.print(posY);
 }
 
-void moverBracoDir() {
-  int posY2 = analogRead(joystick2Y);
-  posY2 = map(posY2, 0, 1023, 50, 90);
-  motorBracoDir.write(posY2);
+void moverBraco2() {
+  int posX = analogRead(joystick2X);
+  posX = map(posX, 0, 1023, 50, 120);
+  motorBraco2.write(posX);
+
+  Serial.println("");
+  Serial.print("posição motor braço 2: ");
+  Serial.print(posX);
 }
 
 void moverGarra() {
-  int posX2 = analogRead(joystick2X);
-  posX2 = map(posX2, 0, 1023, 90, 130);
-  motorGarra.write(posX2);
+  int posY = analogRead(joystick2Y);
+  posY = map(posY, 0, 1023, 90, 130);
+  motorGarra.write(posY);
+
+  Serial.println("");
+  Serial.print("posição motor GARRA: ");
+  Serial.print(posY);
 }
